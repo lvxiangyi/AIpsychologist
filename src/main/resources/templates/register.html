@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>用户注册</title>
+    <style>
+        .form-container {
+            width: 300px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .error {
+            color: red;
+            font-size: 12px;
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>用户注册</h2>
+        <form th:action="@{/auth/register}" method="post">
+            <div class="form-group">
+                <label for="username">用户名</label>
+                <input type="text" id="username" name="username" required>
+                <div th:if="${usernameError}" class="error" th:text="${usernameError}"></div>
+            </div>
+            <div class="form-group">
+                <label for="password">密码</label>
+                <input type="password" id="password" name="password" required>
+                <div th:if="${passwordError}" class="error" th:text="${passwordError}"></div>
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">确认密码</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required>
+                <div th:if="${confirmPasswordError}" class="error" th:text="${confirmPasswordError}"></div>
+            </div>
+            <button type="submit" class="submit-btn">注册</button>
+        </form>
+        <div style="margin-top: 15px; text-align: center;">
+            <a href="/auth/login">已有账号？去登录</a>
+        </div>
+    </div>
+</body>
+</html>
+<script>
+document.querySelector("form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const data = {
+        username: e.target.username.value,
+        password: e.target.password.value
+    };
+    const response = await fetch('/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    });
+    if (response.ok) {
+        alert('注册成功！即将跳转到登录页面');
+        window.location.href = '/auth/login';
+    } else {
+        const errorData = await response.json();
+        if (errorData.message) {
+            alert(`注册失败: ${errorData.message}`);
+        } else {
+            alert('注册失败，请检查输入信息');
+        }
+    }
+});
+</script>
